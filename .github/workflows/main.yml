@@ -1,0 +1,37 @@
+name: Build PlugDrop Plugin
+
+on:
+  workflow_dispatch:
+    inputs:
+      pluginName:
+        description: "Nom du plugin à générer"
+        required: true
+      description:
+        description: "Description du plugin"
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JUCE
+        run: |
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git
+          mv JUCE ./JUCE-src
+
+      - name: Make build scripts executable
+        run: chmod +x build.sh entrypoint.sh
+
+      - name: Build plugin
+        run: |
+          ./build.sh "${{ github.event.inputs.pluginName }}" "${{ github.event.inputs.description }}"
+
+      - name: Upload compiled plugin
+        uses: actions/upload-artifact@v3
+        with:
+          name: generated-plugin
+          path: build/**/*.*
