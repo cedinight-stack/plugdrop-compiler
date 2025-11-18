@@ -17,11 +17,10 @@ RUN apt update && apt install -y \
     libcurl4-openssl-dev \
     patchelf
 
-# Install JUCE
+# Clone JUCE automatically
 WORKDIR /root
 RUN git clone --depth 1 https://github.com/juce-framework/JUCE.git juce
 
-# Copy builder files
 WORKDIR /app
 COPY . .
 
