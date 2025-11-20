@@ -1,0 +1,40 @@
+name: Build JUCE Plugin
+
+on:
+  push:
+    paths:
+      - 'plugins/**'
+      - '!plugins/**/**/*.vst3'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build libasound2-dev libx11-dev libfreetype6-dev libxrandr-dev libxinerama-dev libxcursor-dev libxext-dev libssl-dev
+
+      - name: Clone JUCE
+        run: |
+          git clone --depth=1 https://github.com/juce-framework/JUCE.git
+
+      - name: Build Plugin
+        run: |
+          cd plugins
+          PLUGIN_DIR=$(ls -d */ | head -n 1)
+          echo "Building plugin in $PLUGIN_DIR"
+          cd "$PLUGIN_DIR"
+
+          cmake -Bbuild -G Ninja -DCMAKE_BUILD_TYPE=Release -DJUCE_BUILD_EXAMPLES=OFF .
+          cmake --build build --config Release
+
+      - name: Upload Plugin Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Built-Plugin
+          path: plugins/**/build/*
