@@ -45,13 +45,10 @@ jobs:
         cmake --build . --config Release
 
     # --- Upload built plugin (VST3 or others) ---
-    - name: Upload Plugin Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: Built-Plugin
-        path: |
-          build/**/*.vst3
-          build/**/*.so
-          build/**/*.dll
-          build/**/*.component
+ - name: Upload Plugin Artifact
+  uses: actions/upload-artifact@v4
+  with:
+    name: plugin
+    path: build/**
+
 
