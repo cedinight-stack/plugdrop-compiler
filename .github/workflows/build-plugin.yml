@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Si tu veux cloner JUCE à la main, décommente ce bloc
+      # Si tu veux cloner JUCE directement (optionnel)
       # - name: Clone JUCE
       #   run: |
       #     git clone https://github.com/juce-framework/JUCE.git juce
@@ -29,7 +30,13 @@ jobs:
       - name: Extract plugin sources
         run: |
           rm -rf plugins
-          unzip *.zip -d plugins
+          if ls *.zip 1> /dev/null 2>&1; then
+            echo "ZIP trouvé, extraction..."
+            unzip *.zip -d plugins
+          else
+            echo "❌ Aucun fichier ZIP trouvé. Rien à extraire."
+            exit 1
+          fi
 
       - name: Configure CMake
         run: |
