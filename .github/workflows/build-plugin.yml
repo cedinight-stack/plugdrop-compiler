@@ -26,10 +26,16 @@ jobs:
             libxcursor-dev libxcomposite-dev libxrender-dev \
             libfreetype6-dev libglu1-mesa-dev
 
-      - name: Configure CMake
-        run: |
-          cd plugins
-          cmake -B build -S . -DJUCE_BUILD_EXAMPLES=OFF
+     - name: Extract plugin sources
+  run: |
+    rm -rf plugins
+    unzip *.zip -d plugins
+
+  - name: Configure CMake
+  run: |
+    cd plugins
+    cmake .
+
 
       - name: Build plugin
         run: |
@@ -37,7 +43,7 @@ jobs:
           cmake --build build --config Release -- -j2
 
       - name: Upload Plugin Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: juce-plugin
           path: plugins/build
