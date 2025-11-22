@@ -2,7 +2,7 @@ name: Build JUCE Plugin
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -10,45 +10,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    # --- Clone JUCE (OBLIGATOIRE !) ---
-    - name: Clone JUCE
-      run: |
-        git clone --depth 1 https://github.com/juce-framework/JUCE.git
-        echo "JUCE folder downloaded"
+      # Si tu as besoin de cloner JUCE, tu peux le faire ici
+      # - name: Clone JUCE
+      #   run: |
+      #     git clone https://github.com/juce-framework/JUCE.git juce
 
-    # --- Install required system packages ---
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++ pkg-config libasound2-dev \
-            libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev \
-            libfreetype6-dev libcurl4-openssl-dev xvfb
+      - name: Install JUCE dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libasound2-dev libx11-dev libxinerama-dev libxrandr-dev \
+            libxcursor-dev libxcomposite-dev libxrender-dev \
+            libfreetype6-dev libglu1-mesa-dev
 
-    # --- Configure the JUCE plugin build ---
-    - name: Configure CMake
-      run: |
-        mkdir -p build
-        cd build
-        cmake .. \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DJUCE_PATH=${{ github.workspace }}/JUCE \
-          -DCMAKE_PREFIX_PATH=${{ github.workspace }}/JUCE \
-          -G "Unix Makefiles"
+      - name: Configure CMake
+        run: |
+          cd plugins
+          cmake -B build -S . -DJUCE_BUILD_EXAMPLES=OFF
 
-    # --- Build plugin ---
-    - name: Build plugin
-      run: |
-        cd build
-        cmake --build . --config Release
+      - name: Build plugin
+        run: |
+          cd plugins
+          cmake --build build --config Release -- -j2
 
-    # --- Upload built plugin (VST3 or others) ---
- - name: Upload Plugin Artifact
-  uses: actions/upload-artifact@v4
-  with:
-    name: plugin
-    path: build/**
-
-
+      - name: Upload Plugin Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: juce-plugin
+          path: plugins/build
