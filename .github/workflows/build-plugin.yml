@@ -13,6 +13,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Clone JUCE
+        run: |
+          git clone --depth 1 https://github.com/juce-framework/JUCE.git /root/juce
+
       - name: Install JUCE dependencies
         run: |
           sudo apt-get update
@@ -21,13 +25,14 @@ jobs:
             libxcursor-dev libxcomposite-dev libxrender-dev \
             libfreetype6-dev libglu1-mesa-dev
 
-      # ⚠️ À partir d’ici on suppose que ton backend a déjà
-      # poussé CMakeLists.txt + PluginProcessor.* + PluginEditor.*
-      # à la racine du repo plugdrop-compiler.
+      - name: Prepare plugin build folder
+        run: |
+          rm -rf build
+          mkdir build
 
       - name: Configure CMake
         run: |
-          cmake -B build -S .
+          cmake -B build -S . -DJUCE_PATH=/root/juce
 
       - name: Build plugin
         run: |
