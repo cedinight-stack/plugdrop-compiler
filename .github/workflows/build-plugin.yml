@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Si tu as besoin de cloner JUCE, tu peux le faire ici
+      # Si tu as besoin de cloner JUCE
       # - name: Clone JUCE
       #   run: |
       #     git clone https://github.com/juce-framework/JUCE.git juce
@@ -26,16 +26,15 @@ jobs:
             libxcursor-dev libxcomposite-dev libxrender-dev \
             libfreetype6-dev libglu1-mesa-dev
 
-     - name: Extract plugin sources
-  run: |
-    rm -rf plugins
-    unzip *.zip -d plugins
+      - name: Extract plugin sources
+        run: |
+          rm -rf plugins
+          unzip "*.zip" -d plugins
 
-  - name: Configure CMake
-  run: |
-    cd plugins
-    cmake .
-
+      - name: Configure CMake
+        run: |
+          cd plugins
+          cmake .
 
       - name: Build plugin
         run: |
