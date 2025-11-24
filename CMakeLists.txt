@@ -1,37 +1,35 @@
 cmake_minimum_required(VERSION 3.15)
 
-# Nom du plugin : il doit correspondre au nom du fichier
-set(PLUGIN_NAME "PlugDropPlugin")
-
-project(${PLUGIN_NAME})
+project(PlugDropPlugin VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Chemin vers JUCE – GitHub Actions le clone dans ../juce
-set(JUCE_PATH "${CMAKE_SOURCE_DIR}/../juce")
+# === PATH JUCE CLONÉ PAR GITHUB ACTIONS ===
+set(JUCE_PATH "${CMAKE_SOURCE_DIR}/juce")
 
-# Ajout de JUCE au projet
-add_subdirectory(${JUCE_PATH} juce)
+# === CHARGER LE MODULE JUCE ===
+add_subdirectory(${JUCE_PATH})
 
-# Déclaration du plugin
-juce_add_plugin(${PLUGIN_NAME}
-    VERSION "1.0.0"
+include(${JUCE_PATH}/extras/Build/CMake/JUCE.cmake)
+
+# === DÉCLARATION DU PLUGIN ===
+juce_add_plugin(PlugDropPlugin
     COMPANY_NAME "PlugDrop"
     PLUGIN_MANUFACTURER_CODE Pdro
     PLUGIN_CODE PLGD
     FORMATS VST3
-    PRODUCT_NAME "${PLUGIN_NAME}"
+    PRODUCT_NAME "PlugDropPlugin"
 )
 
-# Ajout des sources
-target_sources(${PLUGIN_NAME} PRIVATE
-    PluginProcessor.cpp
-    PluginEditor.cpp
+# === SOURCES ===
+target_sources(PlugDropPlugin PRIVATE
+    Source/PluginProcessor.cpp
+    Source/PluginEditor.cpp
 )
 
-# Dépendances JUCE
-target_link_libraries(${PLUGIN_NAME} PRIVATE
+# === LIENS JUCE ===
+target_link_libraries(PlugDropPlugin PRIVATE
     juce::juce_audio_utils
     juce::juce_audio_processors
     juce::juce_dsp
