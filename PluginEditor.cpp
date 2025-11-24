@@ -1,17 +1,38 @@
 #include "PluginEditor.h"
-#include "PluginProcessor.h"
 
-SimplePluginAudioProcessorEditor::SimplePluginAudioProcessorEditor (SimplePluginAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+SmoothSaturateAudioProcessorEditor::SmoothSaturateAudioProcessorEditor (SmoothSaturateAudioProcessor& p)
+    : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    setSize (400, 300);
+    smoothGainSlider = std::make_unique<juce::Slider>();
+    smoothGainLabel = std::make_unique<juce::Label>();
+    
+    smoothGainSlider->setSliderStyle(juce::Slider::LinearHorizontal);
+    smoothGainSlider->setRange(0.0, 10.0);
+    smoothGainSlider->setValue(1.0);
+    smoothGainSlider->setTextValueSuffix(" dB");
+    smoothGainSlider->addListener(this);
+    
+    smoothGainLabel->setText("Smooth Gain", juce::dontSendNotification);
+    smoothGainLabel->attachToComponent(smoothGainSlider.get(), true);
+
+    addAndMakeVisible(smoothGainSlider.get());
+    addAndMakeVisible(smoothGainLabel.get());
+    
+    setSize(400, 300);
 }
 
-SimplePluginAudioProcessorEditor::~SimplePluginAudioProcessorEditor() {}
+SmoothSaturateAudioProcessorEditor::~SmoothSaturateAudioProcessorEditor()
+{
+}
 
-void SimplePluginAudioProcessorEditor::paint (juce::Graphics& g)
+void SmoothSaturateAudioProcessorEditor::paint (juce::Graphics& g)
 {
     g.fillAll (juce::Colours::black);
+    g.setColour (juce::Colours::white);
+    g.drawText ("Smooth Saturate", getLocalBounds(), juce::Justification::centred, true);
 }
 
-void SimplePluginAudioProcessorEditor::resized() {}
+void SmoothSaturateAudioProcessorEditor::resized()
+{
+    smoothGainSlider->setBounds(40, 120, getWidth() - 80, 30);
+}
