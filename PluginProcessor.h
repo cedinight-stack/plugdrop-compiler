@@ -1,22 +1,26 @@
 #pragma once
+
 #include <JuceHeader.h>
 
-class SimplePluginAudioProcessor : public juce::AudioProcessor
+class SmoothSaturateAudioProcessor  : public juce::AudioProcessor
 {
 public:
-    SimplePluginAudioProcessor();
-    ~SimplePluginAudioProcessor() override;
+    SmoothSaturateAudioProcessor();
+    ~SmoothSaturateAudioProcessor() override;
 
-    void prepareToPlay (double, int) override;
+    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
-    const juce::String getName() const override { return "SimplePlugin"; }
-    double getTailLengthSeconds() const override { return 0.0; }
+    juce::AudioProcessorEditor* createEditor() override;
+    bool hasEditor() const override;
 
-    bool acceptsMidi() const override { return false; }
-    bool producesMidi() const override { return false; }
+    juce::AudioProcessorValueTreeState parameters;
+
+    void reset();
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimplePluginAudioProcessor)
+    float smoothGain;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SmoothSaturateAudioProcessor)
 };
