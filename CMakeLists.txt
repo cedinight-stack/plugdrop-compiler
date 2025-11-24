@@ -1,36 +1,27 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(PlugDropPlugin VERSION 1.0.0)
+project(SmoothSaturate LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(JUCE_DIR "/path/to/JUCE")  # Change this to your JUCE path
 
-# === PATH JUCE CLONÉ PAR GITHUB ACTIONS ===
-set(JUCE_PATH "${CMAKE_SOURCE_DIR}/juce")
-
-# === CHARGER LE MODULE JUCE ===
-add_subdirectory(${JUCE_PATH})
-
-include(${JUCE_PATH}/extras/Build/CMake/JUCE.cmake)
-
-# === DÉCLARATION DU PLUGIN ===
-juce_add_plugin(PlugDropPlugin
-    COMPANY_NAME "PlugDrop"
-    PLUGIN_MANUFACTURER_CODE Pdro
-    PLUGIN_CODE PLGD
-    FORMATS VST3
-    PRODUCT_NAME "PlugDropPlugin"
+set(CMAKE_CURRENT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
+set(SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/PluginProcessor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PluginProcessor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/PluginEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PluginEditor.h
 )
 
-# === SOURCES ===
-target_sources(PlugDropPlugin PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginEditor.cpp
+set(JUCE_ENVIRONMENT_PATH "${JUCE_DIR}/JUCE")
+
+include(JuceCabinet)
+
+juce_add_plugin(SmoothSaturate
+    COMPANY_NAME "YourCompany"
+    VERSION "0.1.0"
+    IS_AUDIO_EFFECT true
+    INPUT_CHANNELS  2
+    OUTPUT_CHANNELS 2
 )
 
-# === LIENS JUCE ===
-target_link_libraries(PlugDropPlugin PRIVATE
-    juce::juce_audio_utils
-    juce::juce_audio_processors
-    juce::juce_dsp
-)
+target_sources(SmoothSaturate PRIVATE ${SOURCES})
