@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install system packages
+      - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
@@ -26,14 +26,13 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/juce-framework/JUCE.git juce
 
-      - name: Prepare plugin build folder
+      - name: Prepare build folder
         run: |
           rm -rf build
-          mkdir build
-
-      - name: Move plugin source into build folder
-        run: |
           mkdir -p build/Source
+
+      - name: Move plugin sources
+        run: |
           cp PluginProcessor.h build/Source/
           cp PluginProcessor.cpp build/Source/
           cp PluginEditor.h build/Source/
