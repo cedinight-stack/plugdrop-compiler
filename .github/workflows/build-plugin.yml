@@ -13,29 +13,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install JUCE dependencies
+      - name: Install system packages
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             libasound2-dev libx11-dev libxinerama-dev libxrandr-dev \
             libxcursor-dev libxcomposite-dev libxrender-dev \
-            libfreetype6-dev libglu1-mesa-dev \
-            cmake g++
+            libfreetype6-dev libglu1-mesa-dev libcurl4-openssl-dev \
+            ninja-build cmake git
+
+      - name: Clone JUCE
+        run: |
+          git clone --depth 1 https://github.com/juce-framework/JUCE.git juce
 
       - name: Prepare plugin build folder
         run: |
-          mkdir -p build
+          rm -rf build
+          mkdir build
+
+      - name: Move plugin source into build folder
+        run: |
+          mkdir -p build/Source
+          cp PluginProcessor.h build/Source/
+          cp PluginProcessor.cpp build/Source/
+          cp PluginEditor.h build/Source/
+          cp PluginEditor.cpp build/Source/
+          cp CMakeLists.txt build/
 
       - name: Configure CMake
         run: |
-          cmake -B build -S .
+          cd build
+          cmake -B . -S . -DCMAKE_BUILD_TYPE=Release -DJUCE_PATH=../juce -G Ninja
 
       - name: Build plugin
         run: |
-          cmake --build build --config Release -- -j2
+          cd build
+          ninja
 
       - name: Upload Plugin Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v3
         with:
           name: juce-plugin
           path: build
